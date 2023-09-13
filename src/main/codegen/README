@@ -1,0 +1,71 @@
+/* Copyright (c) 2006, Sun Microsystems, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+这个目录包含许多JavaCC和JJTree输入语法的示例。
+我们建议您按照以下顺序查看示例。 每个目录都包含一个README文件，其中有更详细的说明:
+
+SimpleExamples:
+	一组非常简单的JavaCC示例。在尝试这些例子之后, 您应该能够自己构建相当复杂的示例。
+
+MailProcessing:
+    介绍如何使用JavaCC解析emacs邮件文件。着重状态的使用。
+
+JJTreeExamples:
+	JJTree(树构建预处理器)有一些简单的输入语法。
+
+CORBA-IDL:
+	这是OMG CORBA 2.0的IDL接口定义语言的语法。
+
+JavaGrammars:
+	这个目录包含调试和维护得非常好的Java语法，适用于该语言的1.0.2和1.1版本。
+
+JavaCCGrammar:
+    这个目录包含官方的JavaCC/JJTree语法。这是基于JavaCC和JJTree构建的语法。
+
+Transformer:
+    这个示例说明了如何定义Java语言扩展并转换回Java。这使用了JJTree。
+
+GUIParsing:
+	这些示例说明了如何从GUI获得解析或词法分析的输入，从而提供了GUI交互的“解析”。
+	另外，这些例子之一说明如何将状态机描述为词法的规范。
+
+Obfuscator:
+	这是Java混淆器的完整实现。这允许我们获取一组Java源文件，并将它们修改为语义上等价的、读起来困难得多的源文件。
+	这个例子展示了在一个系统中使用多个解析器的用法。
+    ``
+Interpreter:
+	这是一个带有声明的简单语言的解释器，赋值、表达式、条件、循环等等。
+	它很好地演示了一个复杂的示例，其中使用JJTree极大地简化了生成解析树的过程。
+	所有操作实际上都是构建在生成的树节点中的方法。
+
+Lookahead:
+	这个目录包含关于LOOKAHEAD的教程以及教程中使用的所有示例。
+
+VTransformer:
+	这个目录包含一个使用JJTree的访问者设计模式的示例。
+	Like the Transformer example,它展示了如何将Java程序处理为稍微不同的形式。

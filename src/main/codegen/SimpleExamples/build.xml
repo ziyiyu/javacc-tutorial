@@ -1,0 +1,27 @@
+<project name="simple" default="simple" basedir=".">
+  <property environment="env"/>
+  <property name="javacc.home" value="C:\workspace\gambo\javacc\target"/>
+  <property name="javacc.tutorial.home" value="${env.JAVACC_TUTORIAL_HOME}"/>
+  <property name="build.home" value="${javacc.tutorial.home}/target/generated-sources/javacc/com/github/gambo/javacc"/>
+  <property name="build.class.home" value="${javacc.tutorial.home}/target/classes"/>
+
+  <target name="run" description="Builds example 'simple'">
+    <delete dir="${build.home}/simple"/>
+    <mkdir dir="${build.home}/simple"/>
+    <javacc target="Simple.jj" outputdirectory="${build.home}/simple" javacchome="${javacc.home}"/>
+    <javac deprecation="false" srcdir="${build.home}/simple" destdir="${build.class.home}" includeantruntime='false'/>
+    <echo message="******* Now cd into the eg1 directory and run 'java Eg1' ******"/>
+    <echo message="*******"/>
+  </target>
+
+
+  <target name="all" description="Builds all examples" depends="clean,run">
+    <echo message="*******"/>
+    <echo message="******* All Built ******"/>
+    <echo message="*******"/>
+  </target>
+    
+  <target name="clean" description="Cleans up any example directories">
+    <delete dir="${build.home}/simple"/>
+  </target>
+</project>

@@ -1,0 +1,286 @@
+/* Copyright (c) 2006, Sun Microsystems, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+This directory contains five examples to get you started using JavaCC.
+Each example is contained in a single grammar file and are listed
+below:
+
+	Simple1.jj
+	Simple2.jj
+	Simple3.jj
+	Simple4.jj
+	NL_Xlator.jj
+	IdList.jj
+
+Once you have tried out and understood each of these examples, you
+should take a look at more complex examples in other sub-directories
+under the examples directory.  But even with just these examples, you
+should be able to get started on reasonable complex grammars.
+
+---------------------------------------------------------------------
+
+Summary Instructions:
+
+如果您是解析器和词法分析专家，并且可以通过阅读来理解示例，那么下面的说明将向您展示如何开始使用javacc。下面的说明是关于Simple1.jj，但是您可以使用相同的命令集构建任何解析器。
+commands.
+
+1. Run javacc on the grammar input file to generate a bunch of Java files that implement the parser and lexical analyzer
+ (or token manager):
+
+	javacc Simple1.jj
+
+2. Now compile the resulting Java programs:
+
+	javac *.java
+
+3. The parser is now ready to use.  To run the parser, type:
+
+	java Simple1
+
+Simple1识别匹配的大括号，后面跟着零个或多个行结束符，最后是文件结束符。
+
+该语法中合法字符串的示例如下:
+
+  "{}", "{{{{{}}}}}", etc.
+
+非法字符串的例子有:
+
+  "{{{{", "{}{}", "{}}", "{{}{}}", "{ }", "{x}", etc.
+
+尝试在Simple1中输入各种不同的输入。 记住<control-d>可以用来表示文件的结束(这是在UNIX平台上)。
+下面是一些运行示例:
+
+	% java Simple1
+	{{}}<return>
+	<control-d>
+	%
+
+	% java Simple1
+	{x<return>
+	Lexical error at line 1, column 2.  Encountered: "x"
+	TokenMgrError: Lexical error at line 1, column 2.  Encountered: "x" (120), after : ""
+	        at Simple1TokenManager.getNextToken(Simple1TokenManager.java:146)
+	        at Simple1.getToken(Simple1.java:140)
+	        at Simple1.MatchedBraces(Simple1.java:51)
+	        at Simple1.Input(Simple1.java:10)
+	        at Simple1.main(Simple1.java:6)
+	%
+
+	% java Simple1
+	{}}<return>
+	ParseException: Encountered "}" at line 1, column 3.
+	Was expecting one of:
+	    <EOF>
+	    "\n" ...
+	    "\r" ...
+
+	        at Simple1.generateParseException(Simple1.java:184)
+	        at Simple1.jj_consume_token(Simple1.java:126)
+	        at Simple1.Input(Simple1.java:32)
+	        at Simple1.main(Simple1.java:6)
+	%
+
+---------------------------------------------------------------------
+
+Simple1.jj的详细描述:
+
+这是一个简单的JavaCC语法，它可以识别一组左大括号，后面跟着相同数量的右大括号，最后是零个或多个行结束符，最后是文件结束符。该语法中合法字符串的示例:
+
+  "{}", "{{{{{}}}}}", etc.
+
+非法字符串的例子有:
+
+  "{{{{", "{}{}", "{}}", "{{}{}}", etc.
+
+这个语法文件从JavaCC提供的所有选项的设置开始。本例中，选项设置是它们的默认值。也可以完全省略选项部分， 或省略或更多的单个选项设置。
+
+下面是包含在“PARSER_BEGIN(name)”和“PARSER_END(name)”之间的Java编译单元。 这个编译单元可以是任意复杂的。
+这个编译单元的唯一约束是它必须定义一个名为“name”的类。 - 与PARSER_BEGIN和PARSER_END的参数相同。这个名称用作解析器生成器生成的Java文件的前缀。
+生成的解析器代码被插入到类“name”的右括号之前。
+
+在上面的示例中，生成解析器的类包含一个main函数。这个main函数通过使用一个构造函数来创建解析器对象的实例，该构造函数接受一个java.io.InputStream类型的参数
+
+然后，main函数调用它想要解析的语法中的非终结符——在本例中是“Input”。在JavaCC生成的解析器中，所有非终结符都具有相同的状态，因此可以针对任何语法非终结符进行解析。
+
+Following this is a list of productions.
+在这个例子中，有两种生成方式，分别定义了非终结符“Input”和“matchedbrace”。在JavaCC语法中，非终结符是作为Java方法编写和实现的。
+当非终结符在产生式(production)的左侧使用时，它被认为是声明的，其语法遵循Java语法。在右侧时，它的用法类似于Java中的方法调用。
+
+每个产生式都定义了其左边的非终结符，后面跟着一个冒号。 接下来是大括号内的一堆声明和语句，这些声明和语句作为通用声明和语句生成到生成的方法中。
+(在上面的例子中，没有任何声明，因此显示为"{}")然后，后面跟着一组同样用大括号括起来的拓展。
+
+JavaCC输入语法中的词法token(正则表达式)要么是简单的字符串,或者更复杂的正则表达式。在上面的例子中，
+有一个这样的正则表达式“<EOF>”，它匹配文件结束符。所有复杂正则表达式都包含在尖括号内。
+
+上面的第一个产生式表明，非终端符“Input”展开为非终端符“matchedbrace”，后面跟着零个或多个行结束符("\n"或"\r")，然后是文件结束符。
+
+上面的第二个产生式说明了这一点
+非终结符“matchedbrace”展开为token“{”，后面是可选的嵌套展开“matchedbrace”，后面是token“}”。方括号[xxx]在JavaCC输入文件中表示xxx是可选的。
+
+[xxx] 也可以写成 (xxx)?.这两种形式是等价的。扩展中可能出现的其他结构有:
+
+   e1 | e2 | e3 | ... : e1, e2, e3, 等当中选择一个.
+   ( e )+             : e出现一次或多次
+   ( e )*             : e出现0次或多次
+
+这些可以也彼此嵌套，所以我们可以得到这样的结构:
+
+   (( e1 | e2 )* [ e3 ] ) | e4
+
+要构建这个解析器，只需在这个文件上运行JavaCC命令并编译生成的Java文件:
+
+	javacc Simple1.jj
+	javac *.java
+
+现在您应该能够运行生成的解析器了。 确保当前目录在CLASSPATH中，然后输入:
+
+	java Simple1
+
+现在输入一系列匹配的大括号，后面跟着一个回车和一个文件结束符(在UNIX机器上是CTRL-D)。
+如果这在您的机器上是一个问题，您可以创建一个文件，并以这种方式将其作为输入管道传输到生成的解析器
+(管道也不能在所有机器上工作 - 如果这是个问题,只需替换"System.in" 在语法文件中使用'new FileInputStream("testfile")'并将您的输入写到这个文件中):
+
+	java Simple1 < myfile
+
+还要尝试输入非法序列，例如不匹配的大括号、空格和大括号之间的回车以及其他字符，并查看解析器生成的错误消息。
+
+---------------------------------------------------------------------
+
+DETAILED DESCRIPTION OF Simple2.jj:
+
+Simple2是对Simple1的一个小修改,其允许空格字符穿插在大括号之间。然后输入如下:
+
+	"{{  }\n}\n\n"
+
+现在将是合法的。
+
+看下Simple2.jj.您将注意到的第一件事是，我们省略了选项部分。这不会改变任何东西，因为Simple1中的选项都被分配了默认值。
+
+该文件与Simple1的另一个区别是:是这个文件包含一个词法规范- 以“SKIP”开头的区域。在这个区域中有4个正则表达式——空格、制表符、换行符和return。
+这表示将忽略这些正则表达式的匹配(并且不考虑解析)。
+因此，无论何时遇到这4个字符中的任何一个，它们都会被丢弃。
+
+除了SKIP之外，JavaCC还有另外三个词法规范区域。这些都是:
+
+. TOKEN:         这用于指定词法标记(参见下一个示例)
+. SPECIAL_TOKEN: 这用于指定在解析过程中要忽略的词法令牌。在这个意义上，SPECIAL_TOKEN与SKIP相同。但是，可以在解析器操作中恢复这些令牌，以便进行适当处理。
+. MORE:          这指定了部分令牌。一个完整的令牌由一系列MORE组成，后面跟着一个token或SPECIAL_TOKEN。
+
+请查看一些更复杂的语法，例如Java语法，以了解这些词汇规范区域的使用示例。
+
+您可以构建Simple2，并使用来自键盘的输入作为标准输入调用生成的解析器。
+
+您还可以尝试在打开各种调试选项的情况下生成解析器，看看输出是什么样子。
+输入以下：
+
+	javacc -debug_parser Simple2.jj
+	javac Simple2*.java
+	java Simple2
+
+然会输入:
+
+	javacc -debug_token_manager Simple2.jj
+	javac Simple2*.java
+	java Simple2
+
+请注意，令牌管理器调试会产生大量诊断信息，它通常用于查看单个令牌的调试跟踪。
+
+---------------------------------------------------------------------
+
+DETAILED DESCRIPTION OF Simple3.jj:
+
+Simple3是第三个也是最后一个匹配括号的探测器。这个示例演示了如何使用TOKEN区域指定词法tokens。
+本例中, "{" 和 "}" 定义为token，并分别命名为LBRACE和RBRACE。然后可以在尖括号内使用这些命名(如示例中所示)来引用这个token。
+通常，duiyu
+
+这个示例还说明了在语法生成操作中的使用。在本例中插入的操作计算匹配大括号的数量。
+注意使用声明区域来声明变量"count"和"nested_count"。还要注意非终结符“matchedbrace”如何将其值作为函数返回值返回。
+
+---------------------------------------------------------------------
+
+DETAILED DESCRIPTION OF NL_Xlator.jj:
+
+本例将详细介绍如何在JavaCC语法文件中编写正则表达式。 它还演示了一组稍微复杂一些的操作，这些操作将语法描述的表达式翻译成英语。
+
+上面示例中的新概念是使用更复杂的正则表达式。如下:
+
+  < ID: ["a"-"z","A"-"Z","_"] ( ["a"-"z","A"-"Z","_","0"-"9"] )* >
+
+创建一个名称为ID的新正则表达式。在语法的其他任何地方，都可以简单地将其称为<ID>。  方括号后面是一组允许的字符 - 本例中，它是任何小写字母或大写字母或下划线. 其中可以是0个或多个小写或大写字母、数字或下划线。
+
+其他可能出现在正则表达式中的结构有:
+
+  ( ... )+	: 一次或多次出现 ...
+  ( ... )?	: 0次或多次出现 ...... (注意，这并不等价于词法token中的 (...)? 和 [...])
+  ( r1 | r2 | ... ) : Any one of r1, r2, ...
+
+[…]定义了匹配模式，由…中指定的字符匹配。 其中可以是单个字符，也可以是字符的范围. "~" 在匹配之前代表‘非’的意思。  如下:
+
+  ["a"-"z"] 匹配所有的小写字母
+  ~[] 匹配任何字符串
+  ~["\n","\r"] 匹配除换行符以外的任何字符
+
+当一个正则表达式被展开的使用, 它接受一个“Token”类型的值. 它被生成到生成的解析器目录中，名为“Token.java”。 上面的例子, 我们定义了一个“Token”类型的变量，并将正则表达式的值赋给它
+
+---------------------------------------------------------------------
+
+DETAILED DESCRIPTION OF IdList.jj:
+
+这个例子说明了SKIP表达式的一个重要属性。 要注意的重点是SKIP中的正则表达式只会在*between tokens*中忽略，而不是
+*within tokens*.
+
+合法输入是:
+
+"abc xyz123 A B C \t\n aaa"
+
+这是因为在连续的<Id>之间允许使用任意数量的SKIP正则表达式。
+然而，以下的输入是不合法的:
+
+"xyz 123"
+
+这是因为“xyz”后面的空格字符属于SKIP类别，因此会导致一个标记结束，另一个标记开始
+这就要求"123" 可以作为一个单独的token，然后“123”并不符合<id>的表达式.
+
+如果需要在<Id>中使用空格, 那么我们可以将Id的定义替换为:
+TOKEN :
+{
+  < Id: ["a"-"z","A"-"Z"] ( (" ")* ["a"-"z","A"-"Z","0"-"9"] )* >
+}
+
+注意，在TOKEN表达式中包含空格字符并不意味着不能在SKIP表达式中使用空格字符。 这意味着，字符串内容里出现的任何可以放在标识符中的空格字符都将参与<Id>的匹配, 而其他所有空格字符将被忽略。
+
+作为推论，必须将任何字符(如空格字符)不能出现的内容定义为token。在上面的例子中，如果<Id>被定义为语法逻辑而不是词法token，那么如下所示, "xyz 123"将被识别为合法的<Id>，这是不对的.
+
+void Id() :
+{}
+{
+  <["a"-"z","A"-"Z"]> ( <["a"-"z","A"-"Z","0"-"9"]> )*
+}
+
+注意，在上述非终端Id的定义中，它由单个字符标记序列组成(注意<…>的位置)，因此这些字符之间允许有空格。
+
