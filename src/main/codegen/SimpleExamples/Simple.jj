@@ -26,20 +26,20 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-PARSER_BEGIN(Simple2)
+PARSER_BEGIN(Simple)
 package com.github.gambo.javacc.simple;
 /** Simple brace matcher. */
-public class Simple2 {
+public class Simple {
 
   /** Main entry point. */
   public static void main(String args[]) throws ParseException {
-    Simple2 parser = new Simple2(System.in);
+    Simple parser = new Simple(System.in);
     parser.Input();
   }
 
 }
 
-PARSER_END(Simple2)
+PARSER_END(Simple)
 
 SKIP :
 {
