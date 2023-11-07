@@ -5,7 +5,7 @@
   <property name="build.home" value="${javacc.tutorial.home}/target/generated-sources/javacc/com/github/gambo/javacc"/>
   <property name="build.class.home" value="${javacc.tutorial.home}/target/classes"/>
 
-  <target name="run" description="Builds example 'simple'">
+  <target name="simple" description="Builds example 'simple'">
     <delete dir="${build.home}/simple"/>
     <mkdir dir="${build.home}/simple"/>
     <javacc target="Simple.jj" outputdirectory="${build.home}/simple" javacchome="${javacc.home}"/>
@@ -14,8 +14,26 @@
     <echo message="*******"/>
   </target>
 
+  <target name="xlator" description="Builds example 'xlator'">
+    <delete dir="${build.home}/xlator"/>
+    <mkdir dir="${build.home}/xlator"/>
+    <javacc target="NL_Xlator.jj" outputdirectory="${build.home}/xlator" javacchome="${javacc.home}"/>
+    <javac deprecation="false" srcdir="${build.home}/xlator" destdir="${build.class.home}" includeantruntime='false'/>
+    <echo message="******* Now cd into the eg1 directory and run 'java Eg1' ******"/>
+    <echo message="*******"/>
+  </target>
 
-  <target name="all" description="Builds all examples" depends="clean,run">
+  <target name="idlist" description="Builds example 'idlist'">
+    <delete dir="${build.home}/idlist"/>
+    <mkdir dir="${build.home}/idlist"/>
+    <javacc target="IdList.jj" outputdirectory="${build.home}/idlist" javacchome="${javacc.home}"/>
+    <javac deprecation="false" srcdir="${build.home}/xlator" destdir="${build.class.home}" includeantruntime='false'/>
+    <echo message="******* Now cd into the eg1 directory and run 'java Eg1' ******"/>
+    <echo message="*******"/>
+  </target>
+
+
+  <target name="all" description="Builds all examples" depends="clean,simple,xlator,idlist">
     <echo message="*******"/>
     <echo message="******* All Built ******"/>
     <echo message="*******"/>
@@ -23,5 +41,6 @@
     
   <target name="clean" description="Cleans up any example directories">
     <delete dir="${build.home}/simple"/>
+    <delete dir="${build.home}/xlator"/>
   </target>
 </project>

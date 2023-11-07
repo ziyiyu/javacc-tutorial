@@ -1,0 +1,86 @@
+/* Copyright (c) 2006, Sun Microsystems, Inc.
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ *     * Redistributions of source code must retain the above copyright notice,
+ *       this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
+ *       contributors may be used to endorse or promote products derived from
+ *       this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+这个例子介绍了词法状态的用法。
+
+这里有两个词法文件 Digest.jj 和 Faq.jj.  由这些生成的解析器处理GNU emacs编辑器创建的RMAIL文件，还包括一个名为sampleMailFile的示例RMAIL文件
+
+Digest.jj 和 Faq.jj在语法和词汇规范上都是相同的。他们只是在action上有所不同。  Digest.jj将邮件文件作为标准输入，并将消息的摘要版本生成到标准输出.
+这就是我们所使用的(在我们使用自动邮件列表软件之前) 生成JavaCC邮件列表的每周邮件摘要。
+Faq.jj 将邮件文件作为标准输入，并生成HTML格式的邮件FAQ. 它会生成一个“index.html”文件，里面包含了所有的邮件标题，以及指向其他HTML文件的链接，
+如“1.html”、“2.html”等。 它包含1st,2nd, etc. 消息. 从Faq.jj生成的解析器接受一个可选整数参数，该参数代表从何处开始处理的消息号.
+
+输入以下命令:
+
+	javacc Digest.jj
+	javacc Faq.jj
+	javac *.java
+	java Digest < sampleMailFile > digestFile
+	java Faq < sampleMailFile
+
+然后看看创建的输出文件.
+
+
+更多关于语法如何工作的细节:
+
+语法规范相当琐碎.  它只是说一个MailFile是一个MailMessage的序列，后面跟着一个文件的结尾。
+并且一个MailMessage是一个或多个<SUBJECT>， <FROM>，和<DATE>，然后是一个0或多个<BODY>，再加上一个<END>的列表。
+
+有五个词汇标记:
+
+<SUBJECT>, <FROM>, <DATE> : 是邮件的主题、发件人和时间字段。
+
+<BODY> : 是一行消息体
+
+<END> : 是消息结束的结束token。
+
+词法规范从一组可重用的私有正则表达式EOL、TWOEOLS和NOT_EOL开始。 它们的定义可以在不同的平台上移植，其中行尾字符不同。
+
+在<DEFAULT>词法状态下， 令牌管理器只是简单地吃掉字符，直到它看到标记为的消息的开始：
+<<EOL> "*** EOOH ***" <EOL>>.  详细信息，请参阅示例邮件文件。
+此时，它切换到状态<MAILHEADER>。
+
+在状态<MAILHEADER>下,两个的连续行结尾表示邮件头的结束，因此令牌管理器将转到 < MAILBODY >词汇状态.  此外，如果它看到“Subject:”，它将转到<MAILSUBJECT>词法状态, “From:”和“Date:”也是如此。
+
+消息的结束由“^_”字符表示，“\u001f”，状态<MAILBODY>在看到这个字符时返回到<DEFAULT>状态，否则它只是一个接一个地返回消息正文行。
+
+词法状态的一般流程图如下所示。 在构建复杂的词汇规范时，绘制这样的图表是很有用的。
+
+
+      <DEFAULT> ---> <MAILHEADER> --+--> <MAILSUBJECT> -->+
+       ^                |    ^      |                     |
+       |                |    |      |                     |
+       |                |    |      +--> <MAILFROM> ----->+
+       +- <MAILBODY> <--+    |      |                     |
+                             |      |                     |
+                             |      +--> <MAILDATE> ----->+
+                             |                            |
+                             |                            |
+                             +----------------------------+
+
+
