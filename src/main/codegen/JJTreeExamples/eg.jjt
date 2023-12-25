@@ -26,8 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
+options {
+  MULTI=true;
+  KEEP_LINE_COLUMN = false;
+}
+
 PARSER_BEGIN(Eg)
-package com.github.gambo.javacc.jjtree;
+package com.github.gambo.javacc.jjtree.Eg;
 /** An Arithmetic Grammar. */
 public class Eg {
 
@@ -36,7 +42,7 @@ public class Eg {
     System.out.println("Reading from standard input...");
     Eg t = new Eg(System.in);
     try {
-      SimpleNode n = t.Start();
+      ASTStart n = t.Start();
       n.dump("");
       System.out.println("Thank you.");
     } catch (Exception e) {
@@ -85,40 +91,50 @@ TOKEN : /* IDENTIFIERS */
 }
 
 /** Main production. */
-SimpleNode Start() : {}
+ASTStart Start() : {}
 {
   Expression() ";"
   { return jjtThis; }
 }
 
 /** An Expression. */
-void Expression() : {}
+void Expression() #void : {}
 {
   AdditiveExpression()
 }
 
 /** An Additive Expression. */
-void AdditiveExpression() : {}
+void AdditiveExpression() #void : {}
 {
-  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+  (
+    MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
+  ) #Add(>1)
 }
 
 /** A Multiplicative Expression. */
-void MultiplicativeExpression() : {}
+void MultiplicativeExpression() #void : {}
 {
-  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+  (
+    UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
+  ) #Mult(>1)
 }
 
 /** A Unary Expression. */
-void UnaryExpression() : {}
+void UnaryExpression() #void : {}
 {
-  "(" Expression() ")" | Identifier() | Integer()
+  "(" Expression() ")" | MyID() | Integer()
 }
 
 /** An Identifier. */
-void Identifier() : {}
+void MyID() :
 {
-  <IDENTIFIER>
+  Token t;
+}
+{
+  t=<IDENTIFIER>
+  {
+    jjtThis.setName(t.image);
+  }
 }
 
 /** An Integer. */
