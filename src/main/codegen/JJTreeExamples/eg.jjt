@@ -33,7 +33,7 @@ options {
 }
 
 PARSER_BEGIN(Eg)
-package com.github.gambo.javacc.jjtree.Eg;
+package com.github.gambo.javacc.jjtree;
 /** An Arithmetic Grammar. */
 public class Eg {
 
