@@ -1,0 +1,31 @@
+<project name="jjtreeExample" default="eg" basedir=".">
+  <property environment="env"/>
+  <property name="javacc.home" value="C:\workspace\gambo\javacc\target"/>
+  <property name="javacc.tutorial.home" value="${env.JAVACC_TUTORIAL_HOME}"/>
+  <property name="build.home" value="${javacc.tutorial.home}/target/generated-sources/javacc/com/github/gambo/javacc"/>
+  <property name="build.class.home" value="${javacc.tutorial.home}/target/classes"/>
+
+  <target name="eg" description="Builds example 'eg'">
+    <delete dir="${build.home}/jjtree"/>
+    <mkdir dir="${build.home}/jjtree"/>
+    <copy file="eg.jjt" todir="${build.home}/jjtree"/>
+    <jjtree target="eg.jjt" outputdirectory="${build.home}/jjtree" javacchome="${javacc.home}"/>
+    <javacc target="${build.home}/jjtree/eg.jj" outputdirectory="${build.home}/jjtree" javacchome="${javacc.home}"/>
+    <javac deprecation="false" srcdir="${build.home}/jjtree" destdir="${build.class.home}" includeantruntime='false'/>
+    <echo message="*******"/>
+    <echo message="******* Now cd into the eg directory and run 'java eg' ******"/>
+    <echo message="*******"/>
+  </target>
+
+  <target name="all" description="Builds all examples" depends="clean,eg">
+    <echo message="*******"/>
+    <echo message="******* All Built ******"/>
+    <echo message="*******"/>
+  </target>
+    
+  <target name="clean" description="Cleans up any example directories">
+    <delete dir="${build.home}/jjtree"/>
+  </target>
+    
+
+</project>
