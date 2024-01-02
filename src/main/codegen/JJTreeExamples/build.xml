@@ -18,6 +18,20 @@
     <echo message="*******"/>
   </target>
 
+  <target name="eg2" description="Builds example 'eg2'">
+    <delete dir="${build.home}/jjtree"/>
+    <mkdir dir="${build.home}/jjtree"/>
+    <copy file="eg2.jjt" todir="${build.home}/jjtree"/>
+    <copy file="ASTMyOtherID.java" todir="${build.home}/jjtree"/>
+    <copy file="Eg2DumpVisitor.java" todir="${build.home}/jjtree"/>
+    <jjtree target="eg2.jjt" outputdirectory="${build.home}/jjtree" javacchome="${javacc.home}"/>
+    <javacc target="${build.home}/jjtree/eg2.jj" outputdirectory="${build.home}/jjtree" javacchome="${javacc.home}"/>
+    <!--    <javac deprecation="false" srcdir="${build.home}/eg2" destdir="${build.home}/eg2" includeantruntime='false'/>-->
+    <echo message="*******"/>
+    <echo message="******* Now cd into the eg2 directory and run 'java eg2' ******"/>
+    <echo message="*******"/>
+  </target>
+
   <target name="all" description="Builds all examples" depends="clean,eg">
     <echo message="*******"/>
     <echo message="******* All Built ******"/>

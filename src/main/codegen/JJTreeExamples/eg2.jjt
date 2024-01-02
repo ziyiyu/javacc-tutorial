@@ -1,9 +1,9 @@
 /* Copyright (c) 2006, Sun Microsystems, Inc.
  * All rights reserved.
- *
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  *     * Redistributions of source code must retain the above copyright notice,
  *       this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
@@ -12,7 +12,7 @@
  *     * Neither the name of the Sun Microsystems, Inc. nor the names of its
  *       contributors may be used to endorse or promote products derived from
  *       this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,20 +29,24 @@
 
 options {
   MULTI=true;
+  VISITOR=true;
   NODE_DEFAULT_VOID=true;
 }
 
-PARSER_BEGIN(Eg)
+PARSER_BEGIN(Eg2)
 package com.github.gambo.javacc.jjtree;
+
 /** An Arithmetic Grammar. */
-public class Eg {
+public class Eg2 {
+
   /** Main entry point. */
   public static void main(String args[]) {
     System.out.println("Reading from standard input...");
-    Eg t = new Eg(System.in);
+    Eg2 t = new Eg2(System.in);
     try {
       ASTStart n = t.Start();
-      n.dump("");
+      Eg2Visitor v = new Eg2DumpVisitor();
+      n.jjtAccept(v, null);
       System.out.println("Thank you.");
     } catch (Exception e) {
       System.out.println("Oops.");
@@ -52,7 +56,7 @@ public class Eg {
   }
 }
 
-PARSER_END(Eg)
+PARSER_END(Eg2)
 
 
 SKIP :
@@ -96,6 +100,7 @@ ASTStart Start() #Start : {}
   { return jjtThis; }
 }
 
+
 /** An Expression. */
 void Expression() : {}
 {
@@ -125,7 +130,7 @@ void UnaryExpression() : {}
 }
 
 /** An Identifier. */
-void Identifier() #MyID :
+void Identifier() #MyOtherID :
 {
   Token t;
 }
